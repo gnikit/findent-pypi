@@ -10,28 +10,25 @@ version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
 name = "findent"
 
 ################################################################################
-PREFIX = os.environ["OS_BUILD_PREFIX"]
-PY_FILE = os.path.dirname(os.path.abspath(__file__))
-FINDENT_ROOT = os.path.join(PY_FILE, f"{name}-{version}")  # XXX: to be removed
-setupdir = os.path.join(FINDENT_ROOT, PREFIX)
+FINDENT_ROOT = os.environ["FINDENT_ROOT"]
+INSTALL_ROOT = os.environ["INSTALL_ROOT"]
 
 print("VERSION: ", version)
 print("FINDENT_ROOT: ", FINDENT_ROOT)
-print("OS_BUILD_PREFIX: ", PREFIX)
-print("SETUPDIR: ", setupdir)
+print("INSTALL_ROOT: ", INSTALL_ROOT)
 ################################################################################
 
 # If built with Windows
 if os.name == "nt":
     exes = [
-        os.path.join(setupdir, "bin", "findent.exe"),
-        os.path.join(setupdir, "bin", "wfindent.exe"),
+        os.path.join(INSTALL_ROOT, "bin", "findent.exe"),
+        os.path.join(INSTALL_ROOT, "bin", "wfindent"),
     ]
 # POSIX OSs
 else:
     exes = [
-        os.path.join(setupdir, "bin", "findent"),
-        os.path.join(setupdir, "bin", "wfindent"),
+        os.path.join(INSTALL_ROOT, "bin", "findent"),
+        os.path.join(INSTALL_ROOT, "bin", "wfindent"),
     ]
 
 
@@ -39,12 +36,12 @@ def gen_install_list(subdir):
     for dirpath, dirs, files in os.walk(subdir):
         if len(files) != 0:
             filepaths = [os.path.join(dirpath, f) for f in files]
-            relpath = os.path.relpath(dirpath, setupdir)
+            relpath = os.path.relpath(dirpath, INSTALL_ROOT)
             data_files.append((relpath, filepaths))
 
 
 data_files = [("bin", exes)]
-# gen_install_list(setupdir + "/share")
+# gen_install_list(INSTALL_ROOT + "/share")
 
 setuptools.setup(
     name=name,
@@ -61,16 +58,17 @@ setuptools.setup(
     platforms="Posix, Windows",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Education",
+        "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "BSD License v2",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X",
         "Programming Language :: Fortran",
         "Programming Language :: C++",
-        "Topic :: Scientific/Engineering",
+        "Topic :: Software Development",
+        "Topic :: Text Processing",
     ],
-    package_dir={"": os.path.join(PY_FILE + "/build")},
+    package_dir={"": os.path.join(os.getcwd() + "/build")},
     data_files=data_files,
 )
