@@ -1,0 +1,50 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the master branch
+  # TODO: probably ought to make this run only on releases
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # Run on Ubuntu, Windows and Mac OS
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Downloads findent tar.gz from sourceforge
+      # TODO: Delete when github repo is updated
+      - name: Download and untar findent
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            wget https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
+            tar -xzf findent-4.1.1.tar.gz
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            curl -o ./findent-4.1.1.tar.gz -L https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
+            tar -xzf findent-4.1.1.tar.gz
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            curl.exe -o ./findent-4.1.1.tar.gz -L https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
+            tar.exe -xzf findent-4.1.1.tar.gz
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
+        shell: bash
+
+        # TODO: add compile for different $RUNNER_OS, cygwin does not seem to work
+        # TODO: add PyPi release, run setup-wheel.py and twine
