@@ -69,6 +69,13 @@ jobs:
             exit 1
           fi
 
+      # NOTE: using ubuntu-latest will inevitably create a wheel that uses
+      # some of the most recent GLIBC versions. Currently, older versions i.e.2.
+      # are uploaded manually using the future 'manylinux' platform tags see
+      # PEP 600 https://www.python.org/dev/peps/pep-0600/ .
+      # If we want to add this process to our CI we would have to get the
+      # version of GLIBC at each Linux environment and use it as part of the
+      # --plat-name string
       - name: Build Python wheels
         shell: bash
         run: |
@@ -101,14 +108,15 @@ jobs:
           name: python-wheels
           path: dist
 
-      # - name: Publish to TestPyPi
-      #     if: startsWith(github.ref, 'refs/tags')
-      #   uses: pypa/gh-action-pypi-publish@master
-      #   with:
-      #     password: ${{ secrets.TEST_PYPI_API_KEY }}
-      #     repository_url: https://test.pypi.org/legacy/
+      # Upload to PyPi and TestPyPi only when we create tags
+      - name: Publish to TestPyPi
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.TEST_PYPI_API_KEY }}
+          repository_url: https://test.pypi.org/legacy/
       - name: Publish to PyPI
-        # if: startsWith(github.ref, 'refs/tags')
+        if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_KEY }}
