@@ -77,8 +77,6 @@ jobs:
           elif [ "$RUNNER_OS" == "macOS" ]; then
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/MacOSX FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            python3 --version
-            pip --version
             pip install setuptools wheel
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Windows FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
           else
@@ -103,17 +101,13 @@ jobs:
           name: python-wheels
           path: dist
 
-      - name: Display downloaded dir
-        run: ls -R
-        working-directory: dist
-    # - name: Publish to TestPyPi
-    #   uses: pypa/gh-action-pypi-publish@master
-    #   with:
-    #     password: ${{ secrets.TEST_PYPI_API_KEY }}
-    #     repository_url: https://test.pypi.org/legacy/
-    # - name: Publish to PyPI
-    #   # if: startsWith(github.ref, 'refs/tags')
-    #   if: runner.os == "Linux"
-    #   uses: pypa/gh-action-pypi-publish@master
-    #   with:
-    #     password: ${{ secrets.PYPI_API_KEY }}
+      - name: Publish to TestPyPi
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.TEST_PYPI_API_KEY }}
+          repository_url: https://test.pypi.org/legacy/
+      # - name: Publish to PyPI
+      #   # if: startsWith(github.ref, 'refs/tags')
+      #   uses: pypa/gh-action-pypi-publish@master
+      #   with:
+      #     password: ${{ secrets.PYPI_API_KEY }}

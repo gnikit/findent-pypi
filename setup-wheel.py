@@ -6,7 +6,7 @@ MAJOR_VERSION = 4
 MINOR_VERSION = 1
 PATCH_VERSION = 1
 
-version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
+version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}.dev"
 name = "findent"
 
 ################################################################################
