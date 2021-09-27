@@ -6,7 +6,7 @@ MAJOR_VERSION = 4
 MINOR_VERSION = 1
 PATCH_VERSION = 1
 
-version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}.dev"
+version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
 name = "findent"
 
 ################################################################################
@@ -52,7 +52,7 @@ setuptools.setup(
     author="Willem Vermin",
     # author_email="wvermin@gmail.com",
     maintainer="Giannis Nikiteas",
-    keywords="fortran, formatter",
+    keywords="fortran, formatter, format converter, dependency generator",
     url="https://github.com/wvermin/findent",
     license="BSD License 2.0",
     platforms="Posix, Windows",

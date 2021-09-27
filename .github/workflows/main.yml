@@ -101,13 +101,14 @@ jobs:
           name: python-wheels
           path: dist
 
-      - name: Publish to TestPyPi
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.TEST_PYPI_API_KEY }}
-          repository_url: https://test.pypi.org/legacy/
-      # - name: Publish to PyPI
-      #   # if: startsWith(github.ref, 'refs/tags')
+      # - name: Publish to TestPyPi
+      #     if: startsWith(github.ref, 'refs/tags')
       #   uses: pypa/gh-action-pypi-publish@master
       #   with:
-      #     password: ${{ secrets.PYPI_API_KEY }}
+      #     password: ${{ secrets.TEST_PYPI_API_KEY }}
+      #     repository_url: https://test.pypi.org/legacy/
+      - name: Publish to PyPI
+        # if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_KEY }}
