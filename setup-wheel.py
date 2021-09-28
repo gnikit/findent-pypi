@@ -46,8 +46,8 @@ data_files = [("bin", exes)]
 setuptools.setup(
     name=name,
     version=version,
-    description="findent Fortran formatter test python wrapper",
-    long_description=open(os.path.join(FINDENT_ROOT, "doc/README"), "r").read(),
+    description="findent: powerful Fortran formatter",
+    long_description=open(os.path.join(os.getcwd(), "doc/README.md"), "r").read(),
     long_description_content_type="text/markdown",
     author="Willem Vermin",
     # author_email="wvermin@gmail.com",
