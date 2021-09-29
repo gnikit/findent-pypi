@@ -80,11 +80,15 @@ jobs:
       - name: Build Python wheels
         shell: bash
         run: |
+          echo "Tag/Branch: " $GITHUB_REF
+          echo "git SHA: " $GITHUB_SHA
           if [ "$RUNNER_OS" == "Linux" ]; then
+            pip3 install setuptools wheel
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Linux FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name manylinux1_x86_64 --universal
           elif [ "$RUNNER_OS" == "macOS" ]; then
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/MacOSX FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
           elif [ "$RUNNER_OS" == "Windows" ]; then
+            pip install setuptools wheel
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Windows FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
           else
             echo "$RUNNER_OS not supported"
@@ -97,8 +101,58 @@ jobs:
           name: python-wheels
           path: dist
 
-  publish:
+  test_python_wheels:
     needs: build
+    # Run on Ubuntu, Windows and Mac OS
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-latest]
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # - uses: actions/setup-python@v2
+      #   with:
+      #     python-version: "3.x"
+      - uses: actions/download-artifact@v2
+        with:
+          name: python-wheels
+          path: dist
+
+      - name: Install Python wheels
+        working-directory: dist
+        shell: bash
+        run: |
+          pip install --user --upgrade --force-reinstall pip
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *manylinux1_x86_64*
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *macosx_10_15_x86_64*
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *win_amd64*
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
+
+      - name: Test findent
+        working-directory: pip-bin
+        shell: bash
+        run: |
+          ls -Ra .
+          ./bin/findent -h
+
+      - name: Test wfindent
+        working-directory: pip-bin
+        shell: bash
+        run: |
+          export PATH=${GITHUB_WORKSPACE}/pip-bin/bin:${PATH}
+          ./bin/wfindent -h
+
+  # TODO: move to a separate .yml and use that badge in README
+  publish:
+    needs: [build, test_python_wheels]
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

@@ -1,7 +1,10 @@
 import os
+import glob
 import setuptools
 
 # Build specific variables should be overwritten by the build system
+# Use GITHUB_REF and/or GITHUB_SHA
+# https://docs.github.com/en/actions/learn-github-actions/environment-variables
 MAJOR_VERSION = 4
 MINOR_VERSION = 1
 PATCH_VERSION = 1
@@ -18,30 +21,8 @@ print("FINDENT_ROOT: ", FINDENT_ROOT)
 print("INSTALL_ROOT: ", INSTALL_ROOT)
 ################################################################################
 
-# If built with Windows
-if os.name == "nt":
-    exes = [
-        os.path.join(INSTALL_ROOT, "bin", "findent.exe"),
-        os.path.join(INSTALL_ROOT, "bin", "wfindent"),
-    ]
-# POSIX OSs
-else:
-    exes = [
-        os.path.join(INSTALL_ROOT, "bin", "findent"),
-        os.path.join(INSTALL_ROOT, "bin", "wfindent"),
-    ]
-
-
-def gen_install_list(subdir):
-    for dirpath, dirs, files in os.walk(subdir):
-        if len(files) != 0:
-            filepaths = [os.path.join(dirpath, f) for f in files]
-            relpath = os.path.relpath(dirpath, INSTALL_ROOT)
-            data_files.append((relpath, filepaths))
-
-
+exes = glob.glob(os.path.join(INSTALL_ROOT, "bin/*"))
 data_files = [("bin", exes)]
-# gen_install_list(INSTALL_ROOT + "/share")
 
 setuptools.setup(
     name=name,
@@ -69,6 +50,6 @@ setuptools.setup(
         "Topic :: Software Development",
         "Topic :: Text Processing",
     ],
-    install_requires=["setuptools", "wheel"],
+    package_dir={"": os.path.join(os.getcwd(), "build")},
     data_files=data_files,
 )
