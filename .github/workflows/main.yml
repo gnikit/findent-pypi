@@ -84,7 +84,6 @@ jobs:
           elif [ "$RUNNER_OS" == "macOS" ]; then
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/MacOSX FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            pip install setuptools wheel
             INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Windows FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
           else
             echo "$RUNNER_OS not supported"

@@ -69,6 +69,6 @@ setuptools.setup(
         "Topic :: Software Development",
         "Topic :: Text Processing",
     ],
-    package_dir={"": os.path.join(os.getcwd() + "/build")},
+    install_requires=["setuptools", "wheel"],
     data_files=data_files,
 )
