@@ -20,12 +20,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # Use the lowest ubuntu version to guarantee backwards compatibility with GLIBC
+        os: [ubuntu-18.04, macos-latest, windows-latest]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
+      # see: https://github.community/t/how-to-get-just-the-tag-name/16241/7
+      - name: Get the version
+        id: get_version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Set global variables
+        shell: bash
+        run: |
+          echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
+          echo "FINDENT_ROOT=${{ github.workspace }}/findent-4.1.1" >> $GITHUB_ENV
+          echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
 
       # Downloads findent tar.gz from sourceforge
       # TODO: Delete when github repo is updated
@@ -51,17 +65,17 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
             cd findent-4.1.1
-            ./configure --prefix=${GITHUB_WORKSPACE}/build/Linux
+            ./configure --prefix=${INSTALL_ROOT}
             make -j2
             make install
           elif [ "$RUNNER_OS" == "macOS" ]; then
             cd findent-4.1.1
-            ./configure --prefix=${GITHUB_WORKSPACE}/build/MacOSX CC=clang CXX=clang++
+            ./configure --prefix=${INSTALL_ROOT} CC=clang CXX=clang++
             make -j2
             make install
           elif [ "$RUNNER_OS" == "Windows" ]; then
             cd findent-4.1.1
-            ./configure --prefix=${GITHUB_WORKSPACE}/build/Windows --with-windows MINGW32=g++
+            ./configure --prefix=${INSTALL_ROOT} --with-windows MINGW32=g++
             make -j2
             make install
           else
@@ -79,17 +93,25 @@ jobs:
       - name: Build Python wheels
         shell: bash
         run: |
+          echo "Branch:" $GITHUB_REF
+          echo "git SHA:" $GITHUB_SHA
+          echo "Version:" ${VERSION}
+          echo "INSTALL_ROOT:" ${INSTALL_ROOT}
+          echo "FINDENT_ROOT:" ${FINDENT_ROOT}
+
           if [ "$RUNNER_OS" == "Linux" ]; then
-            INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Linux FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name manylinux1_x86_64 --universal
+            pip3 install setuptools wheel
+            python3 setup-wheel.py build bdist_wheel --plat-name manylinux1_x86_64 --universal
           elif [ "$RUNNER_OS" == "macOS" ]; then
-            INSTALL_ROOT=${GITHUB_WORKSPACE}/build/MacOSX FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
+            python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
           elif [ "$RUNNER_OS" == "Windows" ]; then
             pip install setuptools wheel
-            INSTALL_ROOT=${GITHUB_WORKSPACE}/build/Windows FINDENT_ROOT=${GITHUB_WORKSPACE}/findent-4.1.1 python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
+            python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
           else
             echo "$RUNNER_OS not supported"
             exit 1
           fi
+
 
       # Save dist/ directory to persist for the next job "publish"
       - uses: actions/upload-artifact@v2
@@ -97,8 +119,65 @@ jobs:
           name: python-wheels
           path: dist
 
-  publish:
+  test_python_wheels:
     needs: build
+    # Run on Ubuntu, Windows and Mac OS
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, macos-11, windows-latest]
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # - uses: actions/setup-python@v2
+      #   with:
+      #     python-version: "3.x"
+      - uses: actions/download-artifact@v2
+        with:
+          name: python-wheels
+          path: dist
+
+      # This for wfindent to work on MacOS
+      # XXX: remove when wfindent stops using getopt
+      - name: Install gnu-getopt for Mac
+        shell: bash
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install gnu-getopt
+
+      - name: Install Python wheels
+        working-directory: dist
+        shell: bash
+        run: |
+          pip install --user --upgrade --force-reinstall pip
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *manylinux1_x86_64*
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *macosx_10_15_x86_64*
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            pip install --target=${GITHUB_WORKSPACE}/pip-bin *win_amd64*
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
+
+      - name: Test findent
+        working-directory: pip-bin
+        shell: bash
+        run: |
+          ls -Ra .
+          ./bin/findent -h
+
+      - name: Test wfindent
+        working-directory: pip-bin
+        shell: bash
+        run: |
+          export PATH=${GITHUB_WORKSPACE}/pip-bin/bin:${PATH}
+          ./bin/wfindent -h
+
+  # TODO: move to a separate .yml and use that badge in README
+  publish:
+    needs: [build, test_python_wheels]
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
