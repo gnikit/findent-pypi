@@ -3,8 +3,12 @@ name: PyPi release
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull events but only for the master branch
+  # We also trigger when tags are pushed otherwise the Release builds will not
+  # be published to PyPi
   push:
     branches: [master]
+    tags:
+      - '*'
   pull_request:
     branches: [master]
 
