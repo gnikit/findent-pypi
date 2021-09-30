@@ -2,21 +2,14 @@ import os
 import glob
 import setuptools
 
-# Build specific variables should be overwritten by the build system
-# Use GITHUB_REF and/or GITHUB_SHA
-# https://docs.github.com/en/actions/learn-github-actions/environment-variables
-MAJOR_VERSION = 4
-MINOR_VERSION = 1
-PATCH_VERSION = 1
-
-version = f"{MAJOR_VERSION}.{MINOR_VERSION}.{PATCH_VERSION}"
 name = "findent"
 
 ################################################################################
 FINDENT_ROOT = os.environ["FINDENT_ROOT"]
 INSTALL_ROOT = os.environ["INSTALL_ROOT"]
+VERSION = os.environ["VERSION"]
 
-print("VERSION: ", version)
+print("VERSION: ", VERSION)
 print("FINDENT_ROOT: ", FINDENT_ROOT)
 print("INSTALL_ROOT: ", INSTALL_ROOT)
 ################################################################################
@@ -26,7 +19,7 @@ data_files = [("bin", exes)]
 
 setuptools.setup(
     name=name,
-    version=version,
+    version=VERSION,
     description="findent: powerful Fortran formatter",
     long_description=open(os.path.join(os.getcwd(), "doc/README.md"), "r").read(),
     long_description_content_type="text/markdown",
