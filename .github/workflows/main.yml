@@ -120,6 +120,13 @@ jobs:
           name: python-wheels
           path: dist
 
+      # This for wfindent to work on MacOS
+      # XXX: remove when wfindent stops using getopt
+      - name: Install gnu-getopt for Mac
+        shell: bash
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install gnu-getopt
+
       - name: Install Python wheels
         working-directory: dist
         shell: bash
