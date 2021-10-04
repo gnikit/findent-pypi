@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
-          echo "FINDENT_ROOT=${{ github.workspace }}/findent-4.1.2-pre11" >> $GITHUB_ENV
+          echo "FINDENT_ROOT=${{ github.workspace }}/findent-4.1.2~pre11" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
 
       # Downloads findent tar.gz from sourceforge
@@ -52,13 +52,13 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
             wget https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre11.tar.gz
-            tar -xzvf findent-4.1.2-pre11.tar.gz
+            tar -xzvf findent-4.1.2~pre11.tar.gz
           elif [ "$RUNNER_OS" == "macOS" ]; then
             wget https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre11.tar.gz
-            tar -xzvf findent-4.1.2-pre11.tar.gz
+            tar -xzvf findent-4.1.2~pre11.tar.gz
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            curl.exe -o ./findent-4.1.2-pre11.tar.gz -L https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre11.tar.gz
-            tar.exe -xzvf findent-4.1.2-pre11.tar.gz
+            curl.exe -o ./findent-4.1.2~pre11.tar.gz -L https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre11.tar.gz
+            tar.exe -xzvf findent-4.1.2~pre11.tar.gz
           else
             echo "$RUNNER_OS not supported"
             exit 1
@@ -68,17 +68,17 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            cd findent-4.1.2-pre11
+            cd findent-4.1.2~pre11
             ./configure --prefix=${INSTALL_ROOT}
             make -j2
             make install
           elif [ "$RUNNER_OS" == "macOS" ]; then
-            cd findent-4.1.2-pre11
+            cd findent-4.1.2~pre11
             ./configure --prefix=${INSTALL_ROOT} CC=clang CXX=clang++
             make -j2
             make install
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            cd findent-4.1.2-pre11
+            cd findent-4.1.2~pre11
             ./configure --prefix=${INSTALL_ROOT} --with-windows MINGW32=g++
             make -j2
             make install
