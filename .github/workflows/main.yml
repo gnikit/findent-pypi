@@ -8,7 +8,7 @@ on:
   push:
     branches: [master]
     tags:
-      - '*'
+      - "*"
   pull_request:
     branches: [master]
 
@@ -41,8 +41,9 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
+          echo "FINDENT_NAME=findent-4.1.1" >> $GITHUB_ENV
           echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
-          echo "FINDENT_ROOT=${{ github.workspace }}/findent-4.1.1" >> $GITHUB_ENV
+          echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
 
       # Downloads findent tar.gz from sourceforge
@@ -51,14 +52,14 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            wget https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
-            tar -xzvf findent-4.1.1.tar.gz
+            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            tar -xzvf ${FINDENT_NAME}.tar.gz
           elif [ "$RUNNER_OS" == "macOS" ]; then
-            wget https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
-            tar -xzvf findent-4.1.1.tar.gz
+            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            tar -xzvf ${FINDENT_NAME}.tar.gz
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            curl.exe -o ./findent-4.1.1.tar.gz -L https://sourceforge.net/projects/findent/files/findent-4.1.1.tar.gz
-            tar.exe -xzvf findent-4.1.1.tar.gz
+            curl.exe -o ./${FINDENT_NAME}.tar.gz -L https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            tar.exe -xzvf ${FINDENT_NAME}.tar.gz
           else
             echo "$RUNNER_OS not supported"
             exit 1
@@ -68,17 +69,17 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            cd findent-4.1.1
+            cd ${FINDENT_NAME}
             ./configure --prefix=${INSTALL_ROOT}
             make -j2
             make install
           elif [ "$RUNNER_OS" == "macOS" ]; then
-            cd findent-4.1.1
+            cd ${FINDENT_NAME}
             ./configure --prefix=${INSTALL_ROOT} CC=clang CXX=clang++
             make -j2
             make install
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            cd findent-4.1.1
+            cd ${FINDENT_NAME}
             ./configure --prefix=${INSTALL_ROOT} --with-windows MINGW32=g++
             make -j2
             make install
@@ -115,7 +116,6 @@ jobs:
             echo "$RUNNER_OS not supported"
             exit 1
           fi
-
 
       # Save dist/ directory to persist for the next job "publish"
       - uses: actions/upload-artifact@v2
