@@ -41,7 +41,7 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
-          echo "FINDENT_NAME=findent-4.1.1" >> $GITHUB_ENV
+          echo "FINDENT_NAME=findent-4.1.2~pre12" >> $GITHUB_ENV
           echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
           echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
@@ -52,13 +52,13 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            wget https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre12.tar.gz
             tar -xzvf ${FINDENT_NAME}.tar.gz
           elif [ "$RUNNER_OS" == "macOS" ]; then
-            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            wget https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre12.tar.gz
             tar -xzvf ${FINDENT_NAME}.tar.gz
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            curl.exe -o ./${FINDENT_NAME}.tar.gz -L https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
+            curl.exe -o ./${FINDENT_NAME}.tar.gz -L https://www.ratrabbit.nl/downloads/findent/findent-4.1.2~pre12.tar.gz
             tar.exe -xzvf ${FINDENT_NAME}.tar.gz
           else
             echo "$RUNNER_OS not supported"
