@@ -90,8 +90,9 @@ jobs:
 
       - name: Run Regression Test
         shell: bash
-        working-directory: ${FINDENT_NAME}
-        run: make check
+        run: |
+          cd ${FINDENT_NAME}
+          make check
 
       # NOTE: using ubuntu-latest will inevitably create a wheel that uses
       # some of the most recent GLIBC versions. Currently, older versions i.e.2.
