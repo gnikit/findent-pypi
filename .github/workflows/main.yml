@@ -88,8 +88,11 @@ jobs:
             exit 1
           fi
 
-      - name: Run Regression Test
+        # The make check uses /usr/bin/sh which does not exist on Windows.
+        # This is a bug on the the configuration of findent
+      - name: Run Regression Tests
         shell: bash
+        if: ${{ runner.os != 'Windows' }}
         run: |
           cd ${FINDENT_NAME}
           make check
