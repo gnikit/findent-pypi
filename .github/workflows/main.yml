@@ -88,6 +88,11 @@ jobs:
             exit 1
           fi
 
+      - name: Run Regression Test
+        shell: bash
+        working-directory: ${FINDENT_NAME}
+        run: make check
+
       # NOTE: using ubuntu-latest will inevitably create a wheel that uses
       # some of the most recent GLIBC versions. Currently, older versions i.e.2.
       # are uploaded manually using the future 'manylinux' platform tags see
@@ -141,13 +146,6 @@ jobs:
         with:
           name: python-wheels
           path: dist
-
-      # This for wfindent to work on MacOS
-      # XXX: remove when wfindent stops using getopt
-      - name: Install gnu-getopt for Mac
-        shell: bash
-        if: ${{ runner.os == 'macOS' }}
-        run: brew install gnu-getopt
 
       - name: Install Python wheels
         working-directory: dist
