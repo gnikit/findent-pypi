@@ -41,7 +41,7 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
-          echo "FINDENT_NAME=findent-4.1.1" >> $GITHUB_ENV
+          echo "FINDENT_NAME=findent-4.1.2" >> $GITHUB_ENV
           echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
           echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
@@ -87,6 +87,15 @@ jobs:
             echo "$RUNNER_OS not supported"
             exit 1
           fi
+
+        # The make check uses /usr/bin/sh which does not exist on Windows.
+        # This is a bug on the the configuration of findent
+      - name: Run Regression Tests
+        shell: bash
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          cd ${FINDENT_NAME}
+          make check
 
       # NOTE: using ubuntu-latest will inevitably create a wheel that uses
       # some of the most recent GLIBC versions. Currently, older versions i.e.2.
@@ -141,13 +150,6 @@ jobs:
         with:
           name: python-wheels
           path: dist
-
-      # This for wfindent to work on MacOS
-      # XXX: remove when wfindent stops using getopt
-      - name: Install gnu-getopt for Mac
-        shell: bash
-        if: ${{ runner.os == 'macOS' }}
-        run: brew install gnu-getopt
 
       - name: Install Python wheels
         working-directory: dist
