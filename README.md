@@ -3,6 +3,8 @@
 
 # findent-pypi
 
+![alt](https://github.com/gnikit/findent-pypi/assets/findent-demo.gif)
+
 ## What is it?
 
 This is a wrapper around [`findent`](https://sourceforge.net/projects/findent/),
