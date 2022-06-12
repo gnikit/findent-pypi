@@ -3,6 +3,8 @@
 
 # findent: powerful Fortran formatter
 
+![alt](https://raw.githubusercontent.com/gnikit/findent-pypi/master/assets/findent-demo.gif)
+
 ## What is it?
 
 **findent** indents/beautifies/converts and can optionally generate the dependencies of Fortran sources.
@@ -14,13 +16,29 @@
 - Honours `cpp` and `coco` preprocess statements
 - Honours OpenMP conditionals
 - Validated against all constructs in
-'Modern Fortran explained, Incorporating Fortran 2018, Metcalf e.a.'
+  'Modern Fortran explained, Incorporating Fortran 2018, Metcalf e.a.'
 - Supported platformrs: Unix and Windows
 - High speed: 50K - 100K lines per second
 - Provides wrapper `wfindent` (`wfindent.bat` on Windows) for batch file processing
 - vim, gedit, emacs: findent optionally emits configuration files
-for these editors to use findent as a plugin.
+  for these editors to use findent as a plugin.
 - GUI frontent available in a separate package: `jfindent`
+
+## Installation
+
+Normal installation using pip
+
+```sh
+pip install findent
+```
+
+## Supported platforms
+
+| OS      | Version              | Architecture |
+| ------- | -------------------- | ------------ |
+| Linux   | All with GLIBC 2.27+ | x64          |
+| MacOS   | 10.15+               | x64          |
+| Windows | 10 and Server        | x64          |
 
 ## Examples
 
@@ -78,6 +96,7 @@ Documentation:
 `:help equalprg`
 
 `:help indentexpr`
+
 <!-- - vim/README -->
 <!-- - and the comments in the files vim/findent.vim and vim/fortran.vim -->
 

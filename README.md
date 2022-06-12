@@ -1,14 +1,28 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/findent.svg)](https://pypi.org/project/findent/)
 [![PyPi release](https://github.com/gnikit/findent-pypi/actions/workflows/main.yml/badge.svg)](https://github.com/gnikit/findent-pypi/actions/workflows/main.yml)
 
-# findent-pypi
+# findent: powerful Fortran formatter
 
 ![alt](https://raw.githubusercontent.com/gnikit/findent-pypi/master/assets/findent-demo.gif)
 
 ## What is it?
 
-This is a wrapper around [`findent`](https://sourceforge.net/projects/findent/),
-the robust and performant Fortran formatting tool to permit easy installation with `pip`.
+**findent** indents/beautifies/converts and can optionally generate the dependencies of Fortran sources.
+
+## Features
+
+- Supports Fortran-66 up to Fortran-2018
+- Converts from Fixed Form to Free Form and vice-versa
+- Honours `cpp` and `coco` preprocess statements
+- Honours OpenMP conditionals
+- Validated against all constructs in
+  'Modern Fortran explained, Incorporating Fortran 2018, Metcalf e.a.'
+- Supported platformrs: Unix and Windows
+- High speed: 50K - 100K lines per second
+- Provides wrapper `wfindent` (`wfindent.bat` on Windows) for batch file processing
+- vim, gedit, emacs: findent optionally emits configuration files
+  for these editors to use findent as a plugin.
+- GUI frontent available in a separate package: `jfindent`
 
 ## Installation
 
@@ -26,8 +40,78 @@ pip install findent
 | MacOS   | 10.15+               | x64          |
 | Windows | 10 and Server        | x64          |
 
-## What is it not?
+## Examples
 
-This is not the repository for `findent`. Any bugs, questions or feature requests related to `findent` should be redirected to
-<https://github.com/wvermin/findent/issues>,
-the official `findent` GitHub repository or to SourceForge.
+### Format file `in.f90` to `out.f90`
+
+```sh
+findent < in.f90 > out.f90
+```
+
+### Format with 4-space indentation and convert Fixed Form `in.f` to Free Form `out.f90`
+
+```sh
+findent -i4 -Rr < in.f > out.f90
+```
+
+### Format and refactor all files with `.f` extension in the current directory
+
+```sh
+wfindent -i4 -Rr *.f
+```
+
+### Generating Fortran source dependencies for use in Makefile
+
+**findent** will generate a dependency list for:
+
+- definitions and uses of modules and submodules
+- `include`, `#include` and `??include` statements
+
+In your Makefile add something similar to:
+
+```Makefile
+findent --makefdeps > makefdeps
+chmod +x makefdeps
+
+include deps
+dep deps:
+  ./makefdeps *.f90 > deps
+```
+
+The flag `--makefdeps` generates a script in the standard output.
+Depending on your usecase the script might not suffice and you will need to write your own version.
+
+## Editor incorporation
+
+### (G) VIM users
+
+Installation instructions:
+
+```sh
+findent --vim_help
+```
+
+Documentation:
+
+`:help equalprg`
+
+`:help indentexpr`
+
+<!-- - vim/README -->
+<!-- - and the comments in the files vim/findent.vim and vim/fortran.vim -->
+
+### GEDIT users
+
+Installation instructions:
+
+```sh
+findent --gedit_help
+```
+
+### EMACS users
+
+Installation instructions:
+
+```sh
+findent --emacs_help
+```
