@@ -155,7 +155,7 @@ jobs:
         working-directory: dist
         shell: bash
         run: |
-          pip install --user --upgrade --force-reinstall pip
+          python3 -m pip install --user --upgrade --force-reinstall pip
           if [ "$RUNNER_OS" == "Linux" ]; then
             pip install --target=${GITHUB_WORKSPACE}/pip-bin *manylinux1_x86_64*
           elif [ "$RUNNER_OS" == "macOS" ]; then
