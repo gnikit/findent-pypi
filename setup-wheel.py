@@ -1,5 +1,6 @@
-import os
 import glob
+import os
+
 import setuptools
 
 name = "findent"
