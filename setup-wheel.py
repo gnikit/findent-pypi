@@ -22,7 +22,7 @@ setuptools.setup(
     name=name,
     version=VERSION,
     description="findent: powerful Fortran formatter",
-    long_description=open(os.path.join(os.getcwd(), "doc/README.md"), "r").read(),
+    long_description=open(os.path.join(os.getcwd(), "doc/README.md")).read(),
     long_description_content_type="text/markdown",
     author="Willem Vermin",
     # author_email="wvermin@gmail.com",
