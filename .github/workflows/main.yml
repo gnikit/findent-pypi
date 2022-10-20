@@ -188,6 +188,11 @@ jobs:
           name: python-wheels
           path: dist
 
+      - name: Upgrade pip
+        shell: bash
+        run: |
+          python3 -m pip install --user --upgrade --force-reinstall pip
+
       # Upload to PyPi and TestPyPi only when we create tags
       - name: Publish to TestPyPi
         if: startsWith(github.ref, 'refs/tags')
