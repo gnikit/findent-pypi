@@ -30,7 +30,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # see: https://github.community/t/how-to-get-just-the-tag-name/16241/7
       - name: Get the version
@@ -142,7 +142,7 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-latest]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # - uses: actions/setup-python@v2
       #   with:
       #     python-version: "3.x"
@@ -187,7 +187,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v2
         with:
           name: python-wheels
