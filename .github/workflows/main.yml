@@ -127,7 +127,7 @@ jobs:
           fi
 
       # Save dist/ directory to persist for the next job "publish"
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: python-wheels
           path: dist
