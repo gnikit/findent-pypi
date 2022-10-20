@@ -41,7 +41,7 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
-          echo "FINDENT_NAME=findent-4.2.2" >> $GITHUB_ENV
+          echo "FINDENT_NAME=findent-4.2.3" >> $GITHUB_ENV
           echo "VERSION=${{ steps.get_version.outputs.VERSION}}" >> $GITHUB_ENV
           echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
