@@ -36,8 +36,9 @@ jobs:
       - name: Set global variables
         shell: bash
         run: |
-          echo "VERSION=4.2.2" >> $GITHUB_ENV
-          echo "FINDENT_NAME=findent-${VERSION}" >> $GITHUB_ENV
+          v="4.2.2"
+          echo "VERSION=${v}" >> $GITHUB_ENV
+          echo "FINDENT_NAME=findent-${v}" >> $GITHUB_ENV
           echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
           echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
 
