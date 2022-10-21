@@ -196,13 +196,14 @@ jobs:
           python3 -m pip install --user --upgrade twine
 
       # Upload to PyPi and TestPyPi only when we create tags
-      - name: Publish to TestPyPi
-        if: startsWith(github.ref, 'refs/tags')
-        run: |
-          python3 -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_KEY }}
+      # TODO: need to regenerate Token when test.pypi.org is online again
+      # - name: Publish to TestPyPi
+      #   if: startsWith(github.ref, 'refs/tags')
+      #   run: |
+      #     python3 -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_KEY }}
       - name: Publish to PyPI
         if: startsWith(github.ref, 'refs/tags')
         run: |
