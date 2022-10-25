@@ -51,7 +51,7 @@ findent < in.f90 > out.f90
 ### Format with 4-space indentation and convert Fixed Form `in.f` to Free Form `out.f90`
 
 ```sh
-findent -i4 -Rr < in.f > out.f90
+findent -i4 -ofree < in.f > out.f90
 ```
 
 ### Format and refactor all files with `.f` extension in the current directory
