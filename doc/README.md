@@ -3,7 +3,7 @@
 
 # findent: powerful Fortran formatter
 
-![alt](https://raw.githubusercontent.com/gnikit/findent-pypi/master/assets/findent-demo.gif)
+![alt](https://raw.githubusercontent.com/gnikit/findent-pypi/master/doc/findent-demo.gif)
 
 ## What is it?
 

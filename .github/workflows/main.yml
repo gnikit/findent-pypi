@@ -1,185 +1,43 @@
-name: PyPi release
+name: Build
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull events but only for the master branch
-  # We also trigger when tags are pushed otherwise the Release builds will not
-  # be published to PyPi
   push:
-    branches: [master]
-    tags:
-      - "*"
-  pull_request:
-    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # Run on Ubuntu, Windows and Mac OS
-    runs-on: ${{ matrix.os }}
+  build_wheels:
+    name: Build wheels on ${{ matrix.sys.os }}
+    runs-on: ${{ matrix.sys.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        # Use the lowest ubuntu version to guarantee backwards compatibility with GLIBC
-        os: [ubuntu-18.04, macos-latest, windows-latest]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+        sys:
+          - { os: windows-2019, shell: bash }
+          - { os: ubuntu-20.04, shell: bash }
+          - { os: macos-11, shell: bash }
+    defaults:
+      run:
+        shell: ${{ matrix.sys.shell }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # NOTE: Update the version when new findent releases occur
-      - name: Set global variables
-        shell: bash
-        run: |
-          v="4.2.3"
-          echo "VERSION=${v}" >> $GITHUB_ENV
-          echo "FINDENT_NAME=findent-${v}" >> $GITHUB_ENV
-          echo "FINDENT_ROOT=${{ github.workspace }}/${FINDENT_NAME}" >> $GITHUB_ENV
-          echo "INSTALL_ROOT=${{ github.workspace }}/build/${{ runner.os }}" >> $GITHUB_ENV
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.12.0
+        env:
+          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ARCHS_WINDOWS: auto64
+          CIBW_ENVIRONMENT_MACOS: CC=clang CXX=clang++
+          CIBW_ENVIRONMENT_WINDOWS: CC=gcc.exe CXX=g++.exe
 
-      # Downloads findent tar.gz from sourceforge
-      # TODO: Delete when github repo is updated
-      - name: Download and Extract findent from fixed release
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
-            tar -xzvf ${FINDENT_NAME}.tar.gz
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            wget https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
-            tar -xzvf ${FINDENT_NAME}.tar.gz
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            curl.exe -o ./${FINDENT_NAME}.tar.gz -L https://sourceforge.net/projects/findent/files/${FINDENT_NAME}.tar.gz
-            tar.exe -xzvf ${FINDENT_NAME}.tar.gz
-          else
-            echo "$RUNNER_OS not supported"
-            exit 1
-          fi
-
-      - name: Configure and Compile findent
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            cd ${FINDENT_NAME}
-            ./configure --prefix=${INSTALL_ROOT}
-            make -j2
-            make install
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            cd ${FINDENT_NAME}
-            ./configure --prefix=${INSTALL_ROOT} CC=clang CXX=clang++
-            make -j2
-            make install
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            cd ${FINDENT_NAME}
-            ./configure --prefix=${INSTALL_ROOT} --with-windows MINGW32=g++
-            make -j2
-            make install
-          else
-            echo "$RUNNER_OS not supported"
-            exit 1
-          fi
-
-        # The make check uses /usr/bin/sh which does not exist on Windows.
-        # This is a bug on the the configuration of findent
-      - name: Run Regression Tests
-        shell: bash
-        if: ${{ runner.os != 'Windows' }}
-        run: |
-          cd ${FINDENT_NAME}
-          make check
-
-      # NOTE: using ubuntu-latest will inevitably create a wheel that uses
-      # some of the most recent GLIBC versions. Currently, older versions i.e.2.
-      # are uploaded manually using the future 'manylinux' platform tags see
-      # PEP 600 https://www.python.org/dev/peps/pep-0600/ .
-      # If we want to add this process to our CI we would have to get the
-      # version of GLIBC at each Linux environment and use it as part of the
-      # --plat-name string
-      - name: Build Python wheels
-        shell: bash
-        run: |
-          echo "Branch:" $GITHUB_REF
-          echo "git SHA:" $GITHUB_SHA
-          echo "Version:" ${VERSION}
-          echo "INSTALL_ROOT:" ${INSTALL_ROOT}
-          echo "FINDENT_ROOT:" ${FINDENT_ROOT}
-
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            pip3 install setuptools wheel
-            python3 setup-wheel.py build bdist_wheel --plat-name manylinux1_x86_64 --universal
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            python3 setup-wheel.py build bdist_wheel --plat-name macosx_10_15_x86_64 --universal
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            pip install setuptools wheel
-            python3 setup-wheel.py build bdist_wheel --plat-name win_amd64 --universal
-          else
-            echo "$RUNNER_OS not supported"
-            exit 1
-          fi
-
-      # Save dist/ directory to persist for the next job "publish"
       - uses: actions/upload-artifact@v3
         with:
           name: python-wheels
-          path: dist
+          path: ./wheelhouse/*.whl
 
-  test_python_wheels:
-    needs: build
-    # Run on Ubuntu, Windows and Mac OS
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-latest]
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      # - uses: actions/setup-python@v2
-      #   with:
-      #     python-version: "3.x"
-      - uses: actions/download-artifact@v3
-        with:
-          name: python-wheels
-          path: dist
-
-      - name: Install Python wheels
-        working-directory: dist
-        shell: bash
-        run: |
-          python3 -m pip install --user --upgrade --force-reinstall pip
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            pip install --target=${GITHUB_WORKSPACE}/pip-bin *manylinux1_x86_64*
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            pip install --target=${GITHUB_WORKSPACE}/pip-bin *macosx_10_15_x86_64*
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            pip install --target=${GITHUB_WORKSPACE}/pip-bin *win_amd64*
-          else
-            echo "$RUNNER_OS not supported"
-            exit 1
-          fi
-
-      - name: Test findent
-        working-directory: pip-bin
-        shell: bash
-        run: |
-          ls -Ra .
-          ./bin/findent -h
-
-      - name: Test wfindent
-        working-directory: pip-bin
-        shell: bash
-        run: |
-          export PATH=${GITHUB_WORKSPACE}/pip-bin/bin:${PATH}
-          ./bin/wfindent -h
-
-  # TODO: move to a separate .yml and use that badge in README
   publish:
-    needs: [build, test_python_wheels]
+    needs: [build_wheels]
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -189,25 +47,15 @@ jobs:
           name: python-wheels
           path: dist
 
-      - name: Upgrade pip
-        shell: bash
-        run: |
-          python3 -m pip install --user --upgrade pip
-          python3 -m pip install --user --upgrade twine
+      - name: Publish package
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_KEY }}
 
-      # Upload to PyPi and TestPyPi only when we create tags
-      # TODO: need to regenerate Token when test.pypi.org is online again
-      # - name: Publish to TestPyPi
-      #   if: startsWith(github.ref, 'refs/tags')
-      #   run: |
-      #     python3 -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
-      #   env:
-      #     TWINE_USERNAME: __token__
-      #     TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_KEY }}
-      - name: Publish to PyPI
-        if: startsWith(github.ref, 'refs/tags')
-        run: |
-          python3 -m twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_KEY }}
+      - name: Publish package
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_KEY }}

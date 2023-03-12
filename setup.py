@@ -1,27 +1,16 @@
-import glob
 import os
 
-import setuptools
+from skbuild import setup
 
-name = "findent"
+# Read version from file, same as in CMakeLists.txt
+with open(os.path.join(os.getcwd(), "version.txt")) as f:
+    version = f.read()
 
-################################################################################
-FINDENT_ROOT = os.environ["FINDENT_ROOT"]
-INSTALL_ROOT = os.environ["INSTALL_ROOT"]
-VERSION = os.environ["VERSION"]
-
-print("VERSION: ", VERSION)
-print("FINDENT_ROOT: ", FINDENT_ROOT)
-print("INSTALL_ROOT: ", INSTALL_ROOT)
-################################################################################
-
-exes = glob.glob(os.path.join(INSTALL_ROOT, "bin/*"))
-data_files = [("bin", exes)]
-
-setuptools.setup(
-    name=name,
-    version=VERSION,
+setup(
+    name="findent",
+    version=version,
     description="findent: powerful Fortran formatter",
+    python_requires=">=3.7",
     long_description=open(os.path.join(os.getcwd(), "doc/README.md")).read(),
     long_description_content_type="text/markdown",
     author="Willem Vermin",
@@ -44,6 +33,5 @@ setuptools.setup(
         "Topic :: Software Development",
         "Topic :: Text Processing",
     ],
-    package_dir={"": os.path.join(os.getcwd(), "build")},
-    data_files=data_files,
+    cmake_args=("-G", "Unix Makefiles"),
 )
