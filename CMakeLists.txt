@@ -32,7 +32,7 @@ ExternalProject_Add(
   URL "https://sourceforge.net/projects/findent/files/findent-${FINDENT_TAG}.tar.gz"
   SOURCE_DIR "${CMAKE_BINARY_DIR}/findent"
   CONFIGURE_COMMAND sh configure --prefix=${CMAKE_BINARY_DIR} ${WIN_FLAGS}
-  BUILD_COMMAND make
+  BUILD_COMMAND make -j 2
   INSTALL_COMMAND make install
   DOWNLOAD_EXTRACT_TIMESTAMP true
 )
