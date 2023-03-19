@@ -19,10 +19,8 @@
   'Modern Fortran explained, Incorporating Fortran 2018, Metcalf e.a.'
 - Supported platformrs: Unix and Windows
 - High speed: 50K - 100K lines per second
-- Provides wrapper `wfindent` (`wfindent.bat` on Windows) for batch file processing
 - vim, gedit, emacs: findent optionally emits configuration files
   for these editors to use findent as a plugin.
-- GUI frontent available in a separate package: `jfindent`
 
 ## Installation
 
@@ -34,11 +32,11 @@ pip install findent
 
 ## Supported platforms
 
-| OS      | Version              | Architecture |
-| ------- | -------------------- | ------------ |
-| Linux   | All with GLIBC 2.27+ | x64          |
-| MacOS   | 10.15+               | x64          |
-| Windows | 10 and Server        | x64          |
+| OS      | Architecture                            |
+| ------- | --------------------------------------- |
+| Linux   | x64, arm64, i686, aarch64, ppc64, s390x |
+| MacOS   | x64, arm64                              |
+| Windows | x64                                     |
 
 ## Examples
 
