@@ -24,6 +24,11 @@ set(EXT)
 if(WIN32)
   set(WIN_FLAGS --with-windows MINGW32=${CMAKE_CXX_COMPILER})
   set(EXT .exe)
+  if (SKBUILD)
+    # pip on Windows installs binaries to Scripts not bin
+    message(STATUS "Will install binaries to Scripts")
+    set(CMAKE_INSTALL_BINDIR Scripts)
+  endif()
 endif()
 
 ExternalProject_Add(
