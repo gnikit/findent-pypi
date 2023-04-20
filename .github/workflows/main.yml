@@ -22,14 +22,17 @@ jobs:
         shell: ${{ matrix.sys.shell }}
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
-        env:
-          CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_ARCHS_WINDOWS: auto64
-          CIBW_ENVIRONMENT_MACOS: CC=clang CXX=clang++
-          CIBW_ENVIRONMENT_WINDOWS: CC=gcc.exe CXX=g++.exe
+
+      - name: Make wheels Pythonless
+        run: |
+          python -m pip install wheel>=0.40.0
+          wheel tags --python-tag py3 --abi-tag none --remove ./wheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
         with:
