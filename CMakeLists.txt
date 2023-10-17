@@ -18,6 +18,10 @@ file(READ "${PROJECT_SOURCE_DIR}/version.txt" version)
 message("version: ${version}")
 
 set(FINDENT_TAG ${version} CACHE STRING "findent version to fetch and build")
+################################################################################
+# XXX: remove this override in the next findent source release
+set(FINDENT_TAG "4.2.6")
+################################################################################
 set(WIN_FLAGS)
 set(EXT)
 
