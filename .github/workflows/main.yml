@@ -27,7 +27,7 @@ jobs:
           python-version: "3.11"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.17.0
 
       - name: Make wheels Pythonless
         run: |
