@@ -10,13 +10,14 @@ before-all = "yum -y install bison flex || apt-get -y install bison flex || apk 
 test-command = "echo 'installed'"
 
 [tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
+archs = ["auto"]
 before-all = "brew install bison flex make"
 test-command = "echo 'installed'"
 
 [tool.cibuildwheel.macos.environment]
 CC = "clang"
 CXX = "clang++"
+MACOSX_DEPLOYMENT_TARGET = "14.0"
 
 [tool.cibuildwheel.windows]
 archs = ["auto64"]
