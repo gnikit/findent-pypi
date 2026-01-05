@@ -16,7 +16,8 @@ jobs:
         sys:
           - { os: windows-latest, shell: bash }
           - { os: ubuntu-latest, shell: bash }
-          - { os: macos-latest, shell: bash }
+          - { os: macos-14, shell: bash }
+          - { os: macos-15-intel, shell: bash } # Intel runner
     defaults:
       run:
         shell: ${{ matrix.sys.shell }}
@@ -27,7 +28,7 @@ jobs:
           python-version: "3.11"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.17.0
+        uses: pypa/cibuildwheel@v3.3.1
 
       - name: Make wheels Pythonless
         run: |

@@ -1,6 +1,7 @@
 findent-*
 build
 venv
+.venv
 
 _skbuild
 cmake-build

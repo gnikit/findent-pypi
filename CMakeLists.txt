@@ -15,6 +15,7 @@ endif()
 
 # Read the findent version from the version file
 file(READ "${PROJECT_SOURCE_DIR}/version.txt" version)
+string(STRIP "${version}" version)
 message("version: ${version}")
 
 set(FINDENT_TAG ${version} CACHE STRING "findent version to fetch and build")
