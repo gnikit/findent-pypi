@@ -4,7 +4,7 @@ from skbuild import setup
 
 # Read version from file, same as in CMakeLists.txt
 with open(os.path.join(os.getcwd(), "version.txt")) as f:
-    version = f.read()
+    version = f.read().strip()
 
 setup(
     name="findent",
