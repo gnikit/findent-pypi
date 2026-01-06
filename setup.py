@@ -4,7 +4,7 @@ from skbuild import setup
 
 # Read version from file, same as in CMakeLists.txt
 with open(os.path.join(os.getcwd(), "version.txt")) as f:
-    version = f.read()
+    version = f.read().strip()
 
 setup(
     name="findent",
@@ -18,13 +18,12 @@ setup(
     maintainer="Giannis Nikiteas",
     keywords="fortran, formatter, format converter, dependency generator",
     url="https://github.com/wvermin/findent",
-    license="BSD License 2.0",
+    license="BSD-3-Clause",
     platforms="Posix, Windows",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX :: Linux",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X",
